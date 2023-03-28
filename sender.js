@@ -13,10 +13,14 @@ let queue_name = "hello-queue";
         authMechanism: ["PLAIN", "AMQPLAIN", "EXTERNAL"]
     }
     let connection = await amqp.connect(rabbitSettings)
-    let channel = await connection.createChannel()
+    let channel = await connection.createConfirmChannel()
 
-    await channel.assertQueue(queue_name, { durable: true })
+    await channel.assertQueue(queue_name, { durable: false, autoDelete: true })
 
-    await channel.sendToQueue(queue_name, Buffer.from("Hello"))
-    console.log("sent")
+    channel.sendToQueue(queue_name, Buffer.from("Hello"), {}, async function (err, ok) {
+        await channel.close()
+        await connection.close()
+
+    })
+
 })()

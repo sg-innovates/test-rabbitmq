@@ -15,7 +15,7 @@ let queue_name = "hello-queue";
     let connection = await amqp.connect(rabbitSettings)
     let channel = await connection.createChannel()
 
-    await channel.assertQueue(queue_name, { durable: true })
+    await channel.assertQueue(queue_name, { durable: false, autoDelete: true})
 
     await channel.consume(queue_name, (msg) => {
         if (msg)
